@@ -5,64 +5,40 @@ import { createClientWithLazyLoad } from 'configcat-node/lib/client';
 @Injectable()
 export class ApiConfigService {
 
-    private config = {};
-    private configCat;
-    private configDone = false;
+    private readonly configCat;
 
     constructor(private readonly configService: ConfigService) {
-        if (this.isEnv) {
-            console.log('env start');
-            this.loadEnv();
-            console.log('env done');
-        } else {
-            console.log('configCat starting');
-            this.loadConfigCat()
-                .then(() => this.doneLoad());
-            console.log('configCat started');
+        const remoteConfig = this.getRemoteConfig();
+        if (remoteConfig !== undefined) {
+            this.configCat = createClientWithLazyLoad(remoteConfig);
         }
     }
 
-    // does getter have TS notation?
-    get isEnv(): boolean {
-        return Boolean(this.getEnv() === 'env');
-    }
-
-    private getEnv = (): string => {
-        return this.configService.get<string>('CONFIG') || '';
+    private getRemoteConfig = (): string => {
+        return this.configService.get<string>('CONFIG');
     };
 
-    private loadEnv = (): void => {
-        this.config = {
-            TEST1: this.configService.get<string>('TEST1'),
-            TEST2: this.configService.get<string>('TEST2'),
-            TEST3: this.configService.get<string>('TEST3'),
-        };
-        this.doneLoad();
-        console.log(this.config);
-    };
-
-    private loadConfigCat = async () => {
-        console.log('configCat load async start');
-        this.configCat = createClientWithLazyLoad(this.getEnv());
-
-        const keys = await this.configCat.getAllKeysAsync();
-        for (const key in keys) {
-            if (keys.hasOwnProperty(key)) {
-                this.config[keys[key]] = await this.configCat.getValueAsync(keys[key]);
-            }
-        }
-
-        console.log(this.config);
-        console.log('configCat load async done');
-    };
-
-    private doneLoad = () => {
-        this.configDone = true;
-    };
-
+    // this is actually unusable because it returns string or Promise
     public getDirect = (key: string) => {
-        return this.config[key];
+        let value = this.configService.get<string>(key);
+        if ((value === undefined) && (this.configCat !== undefined)) {
+            value = this.configCat.getValueAsync(key);
+        }
+
+        return value;
     };
+
+    // works well, but is async
+    public getAsync = async (key: string) => {
+        let value = this.configService.get<string>(key);
+        if ((value === undefined) && (this.configCat !== undefined)) {
+            value = await this.configCat.getValueAsync(key);
+        }
+
+        return value;
+    }
+
+    // with a generator, utilize async fetch but wait for result and return value directly
 
     // does generator have TS notation?
     // private *provider(c) {
@@ -70,12 +46,4 @@ export class ApiConfigService {
     //         yield c++;
     //     }
     // }
-
-    public getAsync = async (key: string) => {
-        if (this.config[key] !== undefined) {
-            return this.config[key];
-        }
-
-        return this.configCat.getValueAsync(key);
-    }
 }

@@ -7,6 +7,6 @@ export class AppService {
 
     getHello() {
         // this.conf.init();
-        return 'Hello World! ' + this.conf.isEnv;
+        return 'Hello World!';
     }
 }
