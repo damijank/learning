@@ -1,30 +1,54 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TestController } from './test/test.controller';
 import { ApiConfigModule } from './api-config/api-config.module';
 import { ConfigModule } from '@nestjs/config';
 import { ApiConfigService} from './api-config/api-config.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {Connection} from 'typeorm';
+import { ProductModule } from './product/product.module';
+import {Product} from './product/product.entity';
+import { ColorModule } from './color/color.module';
+import {Color} from './color/color.entity';
 
 @Module({
-    imports: [ApiConfigModule, ConfigModule.forRoot()],
-    controllers: [AppController, TestController],
+    imports: [
+        ApiConfigModule,
+        ConfigModule.forRoot(),
+        TypeOrmModule.forRoot({
+            // TODO: inject configuration
+            type: 'postgres',
+            host: 'localhost',
+            port: 5432,
+            username: 'larq',
+            password: 'larq',
+            database: 'larq',
+            entities: [
+                Product,
+                Color,
+            ],
+            synchronize: true,
+        }),
+        ProductModule,
+        ColorModule,
+    ],
+    controllers: [AppController],
     providers: [AppService, ApiConfigService],
 })
 export class AppModule {
-    constructor(private readonly configService: ApiConfigService) {
-
-        // unusable; returns a Promise when using configCat, otherwise a string
-        console.log(configService.getDirect('TEST1') + ' < TEST1 direct');
-        console.log(configService.getDirect('TEST2') + ' < TEST2 direct');
-        console.log(configService.getDirect('TEST3') + ' < TEST3 direct');
-
-        // returns okay but is async
-        configService.getAsync('TEST1').then(value => { console.log(value + ' < TEST1 async'); });
-        configService.getAsync('TEST2').then(value => { console.log(value + ' < TEST2 async'); });
-        configService.getAsync('TEST3').then(value => { console.log(value + ' < TEST3 async'); });
-
-        // get with a generator; in essence, a "sync method utilizing async fetch"
-        // ???
+    constructor(
+        private readonly configService: ApiConfigService,
+        private readonly connection: Connection,
+    ) {
+        // const pr = this.connection.getRepository(Product);
+        // const p = new Product();
+        // p.type = 'bottle';
+        // p.name = 'The LARQ Bottle';
+        // p.description = 'A longer description of The LARQ Bottle';
+        // p.category = 'Water Bottles';
+        // p.colors = 'blue, white';
+        // p.sizes = 'all of them';
+        // p.variants = 'only one';
+        // pr.save(p);
     }
 }

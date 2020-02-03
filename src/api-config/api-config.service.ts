@@ -8,42 +8,49 @@ export class ApiConfigService {
     private readonly configCat;
 
     constructor(private readonly configService: ConfigService) {
-        const remoteConfig = this.getRemoteConfig();
-        if (remoteConfig !== undefined) {
-            this.configCat = createClientWithLazyLoad(remoteConfig);
+        const remoteConfigApiKey = this.getRemoteConfigApiKey();
+        if (remoteConfigApiKey !== undefined) {
+            this.configCat = createClientWithLazyLoad(remoteConfigApiKey);
         }
     }
 
-    private getRemoteConfig = (): string => {
-        return this.configService.get<string>('CONFIG');
-    };
+    private static resolveType(value: string) {
+        if (value === undefined) {
+            return undefined;
+        }
 
-    // this is actually unusable because it returns string or Promise
-    public getDirect = (key: string) => {
-        let value = this.configService.get<string>(key);
-        if ((value === undefined) && (this.configCat !== undefined)) {
-            value = this.configCat.getValueAsync(key);
+        value = String(value).trim();
+        if (value.toLowerCase() === 'false') {
+            return false;
+        }
+        if (value.toLowerCase() === 'true') {
+            return true;
+        }
+        if (String(Number(value)) === value) {
+            return Number(value);
         }
 
         return value;
+    }
+
+    private getRemoteConfigApiKey = (): string => {
+        return this.configService.get<string>('CONFIG');
     };
 
-    // works well, but is async
+    // only env vars
+    public get = (key: string) => {
+        const value = this.configService.get<string>(key);
+
+        return ApiConfigService.resolveType(value);
+    };
+
+    // env vars override the remoteConfig values
     public getAsync = async (key: string) => {
         let value = this.configService.get<string>(key);
         if ((value === undefined) && (this.configCat !== undefined)) {
             value = await this.configCat.getValueAsync(key);
         }
 
-        return value;
+        return Promise.resolve(ApiConfigService.resolveType(value));
     }
-
-    // with a generator, utilize async fetch but wait for result and return value directly
-
-    // does generator have TS notation?
-    // private *provider(c) {
-    //     while (true) {
-    //         yield c++;
-    //     }
-    // }
 }
