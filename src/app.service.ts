@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { ApiConfigService } from './api-config/api-config.service';
+import { ApiConfigService } from './api-config';
 
 @Injectable()
 export class AppService {
-    constructor(private readonly conf: ApiConfigService) {}
+    constructor(
+        private readonly conf: ApiConfigService,
+    ) {}
 
     getHello() {
-        // this.conf.init();
         return 'Hello World!';
     }
 }

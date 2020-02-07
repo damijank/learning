@@ -1,17 +1,27 @@
-import {Controller, Get} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
+import {Body, Controller, Get, Post} from '@nestjs/common';
+import { ProductService } from './product.service';
+import {CreateProductDto} from './dto';
+import {Crud} from '@nestjsx/crud';
 import {Product} from './product.entity';
-import {Repository} from 'typeorm';
-import {ProductService} from './product.service';
 
-@Controller('products')
+@Crud({
+  model: {
+    type: Product,
+  },
+})
+@Controller('/api/products')
 export class ProductController {
     constructor(
-        private readonly service: ProductService,
+        public service: ProductService,
     ) {}
 
-    @Get()
-    findAll() {
-        return this.service.findAll();
-    }
+    // @Get('/')
+    // findAll() {
+    //     return this.service.findAll();
+    // }
+    //
+    // @Post('/')
+    // async create(@Body() createProductDto: CreateProductDto) {
+    //     this.service.create(createProductDto);
+    // }
 }
