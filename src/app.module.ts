@@ -1,18 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ApiConfigModule, ApiConfigService } from './api-config';
 import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { ColorModule } from './color/color.module';
 import { DatabaseModule, DatabaseService } from './database';
 import { LogType } from './log';
+import { VariantModule } from './variant/variant.module';
+import { ImageModule } from './image/image.module';
+import { SizeModule } from './size/size.module';
+import { TypeModule } from './type/type.module';
+import { CategoryModule } from './category/category.module';
 
 import * as entities from './entities';
 
 @Module({
     imports: [
-        ApiConfigModule,
+        // load ConfigModule just to get `process.env` populated from .env file
         ConfigModule.forRoot(),
         DatabaseModule.forRoot({
             env: process.env.NODE_ENV,
@@ -28,6 +32,11 @@ import * as entities from './entities';
 
         ProductModule,
         ColorModule,
+        VariantModule,
+        ImageModule,
+        SizeModule,
+        TypeModule,
+        CategoryModule,
     ],
 
     controllers: [
@@ -36,12 +45,10 @@ import * as entities from './entities';
 
     providers: [
         AppService,
-        ApiConfigService,
         DatabaseService,
     ],
 
     exports: [
-        ApiConfigService,
     ],
 })
 export class AppModule {}

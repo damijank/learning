@@ -4,7 +4,7 @@ import {Product} from '../product/product.entity';
 import {Variant} from '../variant/variant.entity';
 
 @Entity()
-export class Color {
+export class Size {
     @ApiProperty({
         readOnly: true,
     })
@@ -15,13 +15,9 @@ export class Color {
     @Column({ length: 256 })
     label: string;
 
-    @ApiProperty()
-    @Column()
-    value: string;
-
-    // @OneToMany(() => Product, value => value.defaultColor)
+    // @OneToMany(() => Product, value => value.defaultSize)
     products: Product[];
 
-    // @OneToMany(() => Variant, value => value.color)
+    // @OneToMany(() => Variant, value => value.size)
     variants: Variant[];
 }

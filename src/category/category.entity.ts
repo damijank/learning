@@ -1,10 +1,9 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import {Product} from '../product/product.entity';
-import {Variant} from '../variant/variant.entity';
 
 @Entity()
-export class Color {
+export class Category {
     @ApiProperty({
         readOnly: true,
     })
@@ -15,13 +14,6 @@ export class Color {
     @Column({ length: 256 })
     label: string;
 
-    @ApiProperty()
-    @Column()
-    value: string;
-
-    // @OneToMany(() => Product, value => value.defaultColor)
+    @OneToMany(() => Product, value => value.category)
     products: Product[];
-
-    // @OneToMany(() => Variant, value => value.color)
-    variants: Variant[];
 }

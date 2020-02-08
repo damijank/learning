@@ -1,11 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { ApiConfigService } from '../api-config';
 
 @Injectable()
 export class DatabaseService {
     constructor(
-        private readonly conf: ApiConfigService,
         @Inject('Connection') public connection: Connection,
     ) {}
 
