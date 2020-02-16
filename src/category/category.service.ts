@@ -11,4 +11,15 @@ export class CategoryService extends TypeOrmCrudService<Category> {
     ) {
         super(repo);
     }
+
+    public findOrCreate = async (bcStore: string, bcCustomFieldId: number): Promise<Category> => {
+        let e = await this.repo.findOne({ bcStore, bcCustomFieldId });
+        if (e === undefined) {
+            e = this.repo.create();
+            e.bcStore = bcStore;
+            e.bcCustomFieldId = bcCustomFieldId;
+        }
+
+        return e;
+    }
 }

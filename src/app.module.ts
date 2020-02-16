@@ -9,8 +9,12 @@ import { LogType } from './log';
 import { VariantModule } from './variant/variant.module';
 import { ImageModule } from './image/image.module';
 import { SizeModule } from './size/size.module';
-import { TypeModule } from './type/type.module';
 import { CategoryModule } from './category/category.module';
+import { ConsoleModule } from 'nestjs-console';
+import { ProductColorModule } from './product-color/product-color.module';
+import { ProductSizeModule } from './product-size/product-size.module';
+import { ProductCliModule } from './cli/product-cli/product-cli.module';
+import { TranslatorService } from './translator/translator.service';
 
 import * as entities from './entities';
 
@@ -18,6 +22,10 @@ import * as entities from './entities';
     imports: [
         // load ConfigModule just to get `process.env` populated from .env file
         ConfigModule.forRoot(),
+
+        // cli
+        ConsoleModule,
+
         DatabaseModule.forRoot({
             env: process.env.NODE_ENV,
             host: process.env.DATABASE_HOST,
@@ -35,8 +43,10 @@ import * as entities from './entities';
         VariantModule,
         ImageModule,
         SizeModule,
-        TypeModule,
         CategoryModule,
+        ProductColorModule,
+        ProductSizeModule,
+        ProductCliModule,
     ],
 
     controllers: [
@@ -46,6 +56,7 @@ import * as entities from './entities';
     providers: [
         AppService,
         DatabaseService,
+        TranslatorService,
     ],
 
     exports: [

@@ -1,24 +1,33 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, BaseEntity, JoinColumn, ManyToOne} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, BaseEntity, JoinColumn, ManyToOne, Index, OneToMany} from 'typeorm';
 import { Color } from '../color/color.entity';
 import {ApiProperty} from '@nestjs/swagger';
 import {Size} from '../size/size.entity';
 import {Variant} from '../variant/variant.entity';
-import {Type} from '../type/type.entity';
 import {Category} from '../category/category.entity';
+import {Exclude, Transform} from 'class-transformer';
+import {ProductColor} from '../product-color/product-color.entity';
+import {ProductSize} from '../product-size/product-size.entity';
+import {TranslatorService} from '../translator/translator.service';
 
 @Entity()
+@Index(() => ['bcId', 'bcStore'], { unique: true })
 export class Product extends BaseEntity {
 
-    @ApiProperty({
-        readOnly: true,
-    })
+    @ApiProperty({ readOnly: true })
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Exclude()
+    @Column()
+    bcId: number;
+
+    @Exclude()
+    @Column({ length: 5 })
+    bcStore: string;
+
     @ApiProperty()
-    @ManyToOne(() => Type, value => value.products)
-    @JoinColumn()
-    type: Type;
+    @Column({ length: 256 })
+    type: string;
 
     @ApiProperty()
     @Column({ length: 256 })
@@ -26,50 +35,25 @@ export class Product extends BaseEntity {
 
     @ApiProperty()
     @Column({ type: 'text' })
+    @Transform((value: string) => TranslatorService.translate(value))
     description: string;
 
     @ApiProperty()
-    @ManyToOne(() => Category, value => value.products)
+    @ManyToOne(() => Category, r => r.products, { cascade: true, eager: true })
     @JoinColumn()
     category: Category;
 
-    @ApiProperty({
-        isArray: true,
-        type: Color,
-    })
-    @ManyToMany(() => Color, {
-        cascade: true,
-    })
+    @ApiProperty({ type: () => [ProductColor] })
+    @OneToMany(() => ProductColor, r => r.product, { cascade: true, eager: true })
+    colors: ProductColor[];
+
+    @ApiProperty({ type: () => [ProductSize] })
+    @OneToMany(() => ProductSize, r => r.product,  { cascade: true, eager: true })
     @JoinTable()
-    colors: Color[];
+    sizes: ProductSize[];
 
-    @ApiProperty()
-    @ManyToOne(() => Color, value => value.products)
-    @JoinColumn()
-    defaultColor: Color;
-
-    @ApiProperty({
-        isArray: true,
-        type: Size,
-    })
-    @ManyToMany(() => Size, {
-        cascade: true,
-    })
-    @JoinTable()
-    sizes: Size[];
-
-    @ApiProperty()
-    @ManyToOne(() => Size, value => value.products)
-    @JoinColumn()
-    defaultSize: Size;
-
-    @ApiProperty({
-        isArray: true,
-        type: Variant,
-    })
-    @ManyToMany(() => Variant, {
-        cascade: true,
-    })
+    @ApiProperty({ type: () => [Variant] })
+    @ManyToMany(() => Variant, { cascade: true, eager: true })
     @JoinTable()
     variants: Variant[];
 }

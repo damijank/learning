@@ -9,6 +9,18 @@ export class Image {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @ApiProperty({
+        readOnly: true,
+    })
+    @Column()
+    bcId: number;
+
+    @ApiProperty({
+        readOnly: true,
+    })
+    @Column({ length: 5 })
+    bcStore: string;
+
     @ApiProperty()
     @Column({ length: 256 })
     path: string;

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, ClassSerializerInterceptor, Controller, Get, Post} from '@nestjs/common';
 import { ProductService } from './product.service';
 import {Crud} from '@nestjsx/crud';
 import {Product} from './product.entity';
@@ -10,29 +10,39 @@ import {ApiTags} from '@nestjs/swagger';
     },
     routes: {
         // only: ['getOneBase', 'getManyBase'],
+        getOneBase: {
+            interceptors: [
+                // ClassSerializerInterceptor,
+            ],
+        },
     },
     query: {
         join: {
-            type: {
+            'category': {
                 eager: true,
             },
-            category: {
+            'colors': {
                 eager: true,
             },
-            colors: {
+            'colors.color': {
                 eager: true,
             },
-            defaultColor: {
+            'sizes': {
                 eager: true,
             },
-            sizes: {
+            'sizes.size': {
                 eager: true,
             },
-            defaultSize: {
+            'variants': {
                 eager: true,
             },
-            variants: {
+            'variants.color': {
                 eager: true,
+                alias: 'variant_color',
+            },
+            'variants.size': {
+                eager: true,
+                alias: 'variant_size',
             },
         },
     },

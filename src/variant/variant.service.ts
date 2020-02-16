@@ -11,4 +11,15 @@ export class VariantService extends TypeOrmCrudService<Variant> {
     ) {
         super(repo);
     }
+
+    public findOrCreate = async (bcStore: string, bcId: number): Promise<Variant> => {
+        let e = await this.repo.findOne({ bcStore, bcId });
+        if (e === undefined) {
+            e = this.repo.create();
+            e.bcStore = bcStore;
+            e.bcId = bcId;
+        }
+
+        return e;
+    }
 }

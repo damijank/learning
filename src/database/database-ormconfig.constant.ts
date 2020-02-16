@@ -15,8 +15,10 @@ export function getOrmConfig(settings?: IDatabaseSettings)
             database: settings.database,
             entities: settings.entities,
             synchronize: true,
-            logging: settings.logging,
-            logger: new DatabaseLogService(settings.logLevel ? settings.logLevel : 'warn'),
+            // logging: settings.logging,
+            // logger: new DatabaseLogService(settings.logLevel ? settings.logLevel : 'warn'),
+            logging: false,
+            logger: null,
         }
     } else {
         return {

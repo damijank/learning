@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './product.entity';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import {isArrayLike} from 'rxjs/internal-compatibility';
 
 @Injectable()
 export class ProductService extends TypeOrmCrudService<Product> {
@@ -12,12 +13,23 @@ export class ProductService extends TypeOrmCrudService<Product> {
         super(repo);
     }
 
-    // async findAll(): Promise<Product[]> {
-    //     return this.repo.find({ relations: ['colors']});
-    // }
-    //
-    // async create(p: Product) {
-    //     const value = await this.repo.insert(p);
-    //     return Promise.resolve(value);
-    // }
+    public findOrCreate = async (bcStore: string, bcId: number): Promise<Product> => {
+        let e = await this.repo.findOne({ bcStore, bcId });
+        if (e === undefined) {
+            e = this.repo.create();
+            e.bcStore = bcStore;
+            e.bcId = bcId;
+            if (!isArrayLike(e.colors)) {
+                e.colors = [];
+            }
+            if (!isArrayLike(e.sizes)) {
+                e.sizes = [];
+            }
+            if (!isArrayLike(e.variants)) {
+                e.variants = [];
+            }
+        }
+
+        return e;
+    };
 }

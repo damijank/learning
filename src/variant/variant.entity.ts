@@ -1,8 +1,10 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToOne, JoinColumn, ManyToOne} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, JoinColumn, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Color } from '../color/color.entity';
 import { Image } from '../image/image.entity';
-import {Size} from '../size/size.entity';
+import { Size } from '../size/size.entity';
+import {Exclude, Expose, Transform} from 'class-transformer';
+import {TranslatorService} from '../translator/translator.service';
 
 @Entity()
 export class Variant {
@@ -12,31 +14,54 @@ export class Variant {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Exclude()
+    @Column()
+    bcId: number;
+
+    @Exclude()
+    @Column({ length: 5 })
+    bcStore: string;
+
     @ApiProperty()
     @Column({ length: 256 })
     sku: string;
 
-    @ApiProperty({})
+    @ApiProperty()
     @Column({ type: 'decimal' })
     price: number;
 
-    @ApiProperty()
-    @ManyToOne(() => Color, value => value.variants)
+    @ManyToOne(() => Color, r => r.variants, { cascade: true, eager: true })
     @JoinColumn()
     color: Color;
 
     @ApiProperty()
-    @ManyToOne(() => Size, value => value.variants)
+    @Column({ nullable: true })
+    colorValue: string;
+
+    @ApiProperty()
+    @ManyToOne(() => Size, r => r.variants, { cascade: true, eager: true })
     @JoinColumn()
     size: Size;
 
-    @ApiProperty()
-    @JoinColumn()
-    stock: boolean;
+    @Exclude()
+    @Column()
+    inventoryLevel: number;
 
-    @ApiProperty()
-    @JoinColumn()
-    personalization: boolean;
+    @Expose()
+    get stock(): boolean {
+        return this.inventoryLevel > 0;
+    }
+    set stock(v: boolean) { return; }
+
+    @Exclude()
+    @Column()
+    personalizationInventoryLevel: number;
+
+    @Expose()
+    get personalizationStock(): boolean {
+        return this.personalizationInventoryLevel > 0;
+    }
+    set personalizationStock(v: boolean) { return; }
 
     @ApiProperty({
         isArray: true,
@@ -47,4 +72,27 @@ export class Variant {
     })
     @JoinTable()
     images: Image[];
+
+    @ApiProperty({ readOnly: true })
+    @Column()
+    isDefault: boolean;
+
+    @ApiProperty({ readOnly: true })
+    @Column({ nullable: true })
+    @Transform((value: string) => TranslatorService.translate(value))
+    outOfStockMessage: string;
+
+    @ApiProperty({ readOnly: true })
+    @Column({ nullable: true })
+    @Transform((value: string) => TranslatorService.translate(value))
+    personalizationOutOfStockMessage: string;
+
+    @ApiProperty({ readOnly: true })
+    @Column({ nullable: true })
+    @Transform((value: string) => TranslatorService.translate(value))
+    backOrderMessage: string;
+
+    @ApiProperty({ readOnly: true })
+    @Column({ nullable: true })
+    backOrderTime: string;
 }

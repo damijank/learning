@@ -11,4 +11,16 @@ export class ColorService extends TypeOrmCrudService<Color> {
     ) {
         super(repo);
     }
+
+    public findOrCreate = async (bcStore: string, bcOptionId: number, bcOptionValueId: number): Promise<Color> => {
+        let e = await this.repo.findOne({ bcStore, bcOptionId, bcOptionValueId });
+        if (e === undefined) {
+            e = this.repo.create();
+            e.bcStore = bcStore;
+            e.bcOptionId = bcOptionId;
+            e.bcOptionValueId = bcOptionValueId;
+        }
+
+        return e;
+    }
 }
