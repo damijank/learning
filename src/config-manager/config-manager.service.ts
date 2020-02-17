@@ -132,7 +132,7 @@ export class ConfigManager extends AbstractConfigManager {
         }
 
         // a valid environment is required for all methods but useFile
-        if (!this.options.useFile && !this.isValidEnvironment(this.environment)) {
+        if (!this.options.useFile && !ConfigManager.isValidEnvironment(this.environment)) {
             this.handleFatalError(`Bad environment key: ${this.options.envKey}`)
         }
 
@@ -153,11 +153,8 @@ export class ConfigManager extends AbstractConfigManager {
      * @todo: should probably validate that env is parsable as path component
      */
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private isValidEnvironment(environment) {
-        if (typeof environment === 'undefined') {
-            return false
-        }
-        return true
+    private static isValidEnvironment(environment) {
+        return typeof environment !== 'undefined'
     }
 
     /**
@@ -374,6 +371,7 @@ export class ConfigManager extends AbstractConfigManager {
      * Pretty print errors for env vars that are required but missing, or that
      * fail validation
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private processConfigErrors(missingKeys, validationErrors) {
         if (missingKeys.length > 0) {
             this.logger.error(`Configuration error.  The following required environment variables are missing: \n--> ${missingKeys.join('\n--> ')}`)
@@ -386,10 +384,11 @@ export class ConfigManager extends AbstractConfigManager {
 
     /**
      * Extract Joi errors into a printable format
-     * @param error
      * @returns array of formatted Joi validation errors
+     * @param errors
      */
-    private extractValidationErrorMessages(errors) {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    private extractValidationErrorMessages = errors => {
         const errorMessages = []
         for (const detail of errors.details) {
             errorMessages.push(detail.message)
@@ -405,13 +404,14 @@ export class ConfigManager extends AbstractConfigManager {
      * @param {string} error message
      * @throws {exception}
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private handleFatalError(message) {
         switch (this.options.onError) {
             case 'throw':
                 this.logger.error(`${message} -- See exception for details`)
                 throw new Error(message)
             case 'continue':
-                this.logger.error("An error was encountered in configuration, but 'continue' was specified.")
+                this.logger.error("An error was encountered in configuration, but 'continue' was specifie.")
                 this.logger.error('This may cause unpredictable results!')
                 break
             default:
@@ -440,6 +440,7 @@ export class ConfigManager extends AbstractConfigManager {
      *
      * @returns a map of the resolution of each environment variable
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public trace() {
         return this.resolveMap
     }
