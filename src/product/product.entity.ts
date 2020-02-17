@@ -1,32 +1,32 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, BaseEntity} from 'typeorm';
-import { Color } from '../color/color.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, BaseEntity } from 'typeorm'
+import { Color } from '../color/color.entity'
 
 @Entity()
 export class Product extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number
 
     @Column({ length: 64 })
-    type: string;
+    type: string
 
     @Column({ length: 256 })
-    name: string;
+    name: string
 
     @Column('text')
-    description: string;
+    description: string
 
     @Column()
-    category: string;
+    category: string
 
     @ManyToMany(type => Color, {
         cascade: true,
     })
     @JoinTable()
-    colors: Color[];
+    colors: Color[]
 
     @Column()
-    sizes: string;
+    sizes: string
 
     @Column()
-    variants: string;
+    variants: string
 }

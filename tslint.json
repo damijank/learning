@@ -13,9 +13,8 @@
     "interface-name": [false],
     "arrow-parens": false,
     "object-literal-sort-keys": false,
-    // my rules, probably not a good idea
-    "no-console": false,
-    "semicolon": false
+    "semicolon": [true, "never"],
+    "no-console": false
   },
   "rulesDirectory": []
 }

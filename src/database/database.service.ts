@@ -1,21 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Connection } from 'typeorm';
-import { ApiConfigService } from '../api-config';
+import { Injectable, Inject } from '@nestjs/common'
+import { createConnection } from 'typeorm'
+import { DATABASE_CONNECT_OPTIONS } from './constants'
 
 @Injectable()
 export class DatabaseService {
-    constructor(
-        private readonly conf: ApiConfigService,
-        @Inject('Connection') public connection: Connection,
-    ) {}
+    private databaseClient
 
-    async getRepository(entity: any) {
-        return this.connection.getRepository(entity);
-    }
+    constructor(@Inject(DATABASE_CONNECT_OPTIONS) private databaseConnectOptions) {}
 
-    async closeConnection() {
-        if (this.connection.isConnected) {
-            await this.connection.close();
-        }
+    async connect(): Promise<any> {
+        return this.databaseClient ? this.databaseClient : (this.databaseClient = await createConnection(this.databaseConnectOptions))
     }
 }
