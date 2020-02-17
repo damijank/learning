@@ -11,20 +11,20 @@ import { EnvHash } from './interfaces'
 
 @Injectable()
 export class ConfigManager extends AbstractConfigManager {
-    // hash that contains our config from the environment after validation
+    // Hash that contains our config from the environment after validation
     private envConfig: EnvHash | void
 
-    // the resolved file path of the `.env` file
+    // The resolved file path of the `.env` file
     private envFilePath: string
 
-    // the working environment, such as `production` or `development`, usually
+    // The working environment, such as `production` or `development`, usually
     // represented by an env var like `NODE_ENV`
     private environment: string
 
-    // whether to log sensitive data
+    // Whether to log sensitive data
     private traceProduction = false
 
-    // map of how each env var has been resolved
+    // Map of how each env var has been resolved
     private resolveMap
 
     /**
@@ -54,12 +54,12 @@ export class ConfigManager extends AbstractConfigManager {
             }
         }
 
-        // processing the configSpec hands us back a Joi schema (`schema`)
+        // Processing the configSpec hands us back a Joi schema (`schema`)
         // along with a map keyed by each var in the schema, with it's value
         // being an object with a single boolean `required` field
         const { schema, required } = this.processConfigSpec()
 
-        // now we fill in any required fields that are present only in the
+        // Now we fill in any required fields that are present only in the
         // external environment (vs. in the `.env` file).  This hands us
         // back an updated config (with any missing values and defaults applied)
         // and a list of any missing keys (to be reported as errors)
@@ -74,6 +74,8 @@ export class ConfigManager extends AbstractConfigManager {
          *
          * abortEarly causes Joi to return all validations rather than stopping at
          * first invalid condition
+         *
+         * @TODO: Update Joi to ^17.0.0
          */
         const { error: validationErrors, value: validatedConfig } = Joi.validate(updatedConfig, schema, {
             abortEarly: false,
@@ -120,7 +122,7 @@ export class ConfigManager extends AbstractConfigManager {
         } else if (process.env.NODE_ENV) {
             environmentKey = 'NODE_ENV'
         } else {
-            // a valid envKey is required for all but useFile
+            // A valid envKey is required for all but useFile
             if (!this.options.useFile && !this.options.defaultEnvironment) {
                 this.handleFatalError('Fatal error. No envKey specified, and `NODE_ENV` is not defined.')
             }
@@ -131,7 +133,7 @@ export class ConfigManager extends AbstractConfigManager {
             this.environment = this.options.defaultEnvironment
         }
 
-        // a valid environment is required for all methods but useFile
+        // A valid environment is required for all methods but useFile
         if (!this.options.useFile && !ConfigManager.isValidEnvironment(this.environment)) {
             this.handleFatalError(`Bad environment key: ${this.options.envKey}`)
         }
@@ -150,7 +152,7 @@ export class ConfigManager extends AbstractConfigManager {
     }
 
     /**
-     * @todo: should probably validate that env is parsable as path component
+     * @TODO: Should probably validate that env is parsable as path component
      */
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private static isValidEnvironment(environment) {
@@ -158,7 +160,7 @@ export class ConfigManager extends AbstractConfigManager {
     }
 
     /**
-     * set this.envRoot to appropriate path to env file.
+     * Set this.envRoot to appropriate path to env file.
      */
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private resolveEnvFilePath() {
@@ -211,7 +213,7 @@ export class ConfigManager extends AbstractConfigManager {
 
         const envPrefix = this.environment
 
-        // construct the path to the config file
+        // Construct the path to the config file
         const filePath = path.resolve(envRoot, envRootSubfolder, envPrefix)
 
         this.envFilePath = filePath + '.env'
@@ -411,7 +413,8 @@ export class ConfigManager extends AbstractConfigManager {
                 this.logger.error(`${message} -- See exception for details`)
                 throw new Error(message)
             case 'continue':
-                this.logger.error("An error was encountered in configuration, but 'continue' was specifie.")
+                // eslint-disable-next-line @typescript-eslint/quotes
+                this.logger.error(`An error was encountered in configuration, but 'continue' was specified.`)
                 this.logger.error('This may cause unpredictable results!')
                 break
             default:
