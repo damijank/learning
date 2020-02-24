@@ -44,8 +44,9 @@ export class ProductCliService {
         // const x = await this.http.get(
         //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProductSearch}?SKU=BDOB074A`,
         //     `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProduct}/1039?includeOptional=customFields,nullCustomFields`,
-        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/product-service/product-custom-field/1039`,
-        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/product-service/product/1039/option-value`,
+        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/warehouse-service/warehouse/3`,
+        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/warehouse-service/product-availability/1039`,
+        //     `https://ws-use.brightpearl.com/public-api/${bpAccount}/product-service/product/1039`,
         //     {
         //         headers: {
         //             /* eslint-disable quote-props */
