@@ -1,0 +1,5 @@
+export * from './firestore-options.interface'
+export * from './firestore-async-options.interface'
+export * from './firestorm-feature-options.interface'
+export * from './metadata-storage.interface'
+export * from './object-literal.interface'

@@ -10,5 +10,7 @@ export class AppService {
         isDev: process.env.NODE_ENV !== 'production',
         api: await this.configService.createApiBootstrapOptions(),
         database: await this.configService.createDatabaseConnectOptions(),
+        firebase: await this.configService.createFirebaseServiceAccount(),
+        firestore: await this.configService.createFirestoreConnectOptions(),
     })
 }

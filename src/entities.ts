@@ -1,2 +1,2 @@
-export * from './product/product.entity';
-export * from './color/color.entity';
+export * from './product/product.entity'
+export * from './color/color.entity'
