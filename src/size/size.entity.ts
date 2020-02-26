@@ -15,15 +15,15 @@ export class Size {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Exclude()
+    // @Exclude()
     @Column()
     bcOptionId: number;
 
-    @Exclude()
+    // @Exclude()
     @Column()
     bcOptionValueId: number;
 
-    @Exclude()
+    // @Exclude()
     @Column({ length: 5 })
     bcStore: string;
 

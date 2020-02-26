@@ -14,11 +14,11 @@ export class Variant {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Exclude()
+    // @Exclude()
     @Column()
     bcId: number;
 
-    @Exclude()
+    // @Exclude()
     @Column({ length: 5 })
     bcStore: string;
 
@@ -59,7 +59,7 @@ export class Variant {
 
     @Expose()
     get personalizationStock(): boolean {
-        return this.personalizationInventoryLevel > 0;
+        return this.personalizationInventoryLevel > this.personalizationOutOfStockThreshold;
     }
     set personalizationStock(v: boolean) { return; }
 
@@ -86,6 +86,10 @@ export class Variant {
     @Column({ nullable: true })
     @Transform((value: string) => TranslatorService.translate(value))
     personalizationOutOfStockMessage: string;
+
+    @ApiProperty({ readOnly: true })
+    @Column({ nullable: true })
+    personalizationOutOfStockThreshold: number;
 
     @ApiProperty({ readOnly: true })
     @Column({ nullable: true })

@@ -12,11 +12,11 @@ export class Category {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Exclude()
+    // @Exclude()
     @Column()
     bcCustomFieldId: number;
 
-    @Exclude()
+    // @Exclude()
     @Column({ length: 5 })
     bcStore: string;
 

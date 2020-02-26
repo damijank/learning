@@ -42,11 +42,11 @@ export class ProductCliService {
         // const bpProductSearch = this.cfg.all().endpoints.bpProductSearch;
         // const bpProduct = this.cfg.all().endpoints.bpProduct;
         // const x = await this.http.get(
-        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProductSearch}?SKU=BDOB074A`,
-        //     `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProduct}/1039?includeOptional=customFields,nullCustomFields`,
+        //     `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProductSearch}?SKU=BDOB074A`,
+        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}${bpProduct}/1039?includeOptional=customFields,nullCustomFields`,
         //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/warehouse-service/warehouse/3`,
         //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/warehouse-service/product-availability/1039`,
-        //     `https://ws-use.brightpearl.com/public-api/${bpAccount}/product-service/product/1039`,
+        //     // `https://ws-use.brightpearl.com/public-api/${bpAccount}/product-service/product/1039`,
         //     {
         //         headers: {
         //             /* eslint-disable quote-props */
@@ -60,7 +60,9 @@ export class ProductCliService {
         //
         // // console.log(x.response.results);
         // // console.log(x.response);
-        // console.log(x);
+        // console.log(x.response.metaData.resultsReturned);
+        // // console.log(x.response.results[0][0]);
+        // // console.log(x.response['1039']);
         //
         // return ;
 
@@ -238,6 +240,12 @@ export class ProductCliService {
                             variant.personalizationOutOfStockMessage = null;
                             if (!!bcVariant.poos && bcVariant.poos.enabled) {
                                 variant.personalizationOutOfStockMessage = bcVariant.poos.message;
+                            }
+
+                            // custom POOS threshold
+                            variant.personalizationOutOfStockThreshold = 0;
+                            if (!!bcVariant.poos) {
+                                variant.personalizationOutOfStockThreshold = bcVariant.poos.threshold ? bcVariant.poos.threshold : 0;
                             }
 
                             // custom BO message & time

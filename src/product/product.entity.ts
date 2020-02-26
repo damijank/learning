@@ -17,11 +17,11 @@ export class Product extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Exclude()
+    // @Exclude()
     @Column()
     bcId: number;
 
-    @Exclude()
+    // @Exclude()
     @Column({ length: 5 })
     bcStore: string;
 
