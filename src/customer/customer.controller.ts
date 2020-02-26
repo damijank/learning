@@ -1,23 +1,19 @@
-import { Controller, Get, Post, Body } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param } from '@nestjs/common'
 import { CustomerService } from './customer.service'
-import * as admin from 'firebase-admin'
+import { CreateCustomerDto } from './dto'
+import { UserByEmailPipe } from '../common/pipes'
 
 @Controller('customer')
 export class CustomerController {
     constructor(private readonly customerService: CustomerService) {}
 
-    @Get()
-    async findAll(): Promise<any> {
-        return this.customerService.getCustomers()
+    @Get(':email?')
+    async findOne(@Param('email', new UserByEmailPipe()) email: string): Promise<any> {
+        return await this.customerService.getCustomer(email)
     }
 
     @Post()
-    async create(@Body() createCustomerDto: admin.auth.UserRecord): Promise<any> {
-        return this.customerService.createCustomer(createCustomerDto)
-    }
-
-    @Post('login')
-    async login(@Body() loginCustomerDto: admin.auth.UserRecord): Promise<any> {
-        return this.customerService.createCustomer(loginCustomerDto)
+    async create(@Body() createCustomerDto: CreateCustomerDto): Promise<any> {
+        return await this.customerService.createCustomer(createCustomerDto)
     }
 }

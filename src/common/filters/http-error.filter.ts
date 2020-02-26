@@ -1,26 +1,39 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Logger, HttpException, HttpStatus } from '@nestjs/common'
+import { FirebaseError } from 'firebase'
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    catch(exception: HttpException, host: ArgumentsHost) {
-        const { getStatus, message, stack } = exception
+    catch(exception: HttpException | FirebaseError, host: ArgumentsHost) {
+        const { message, stack } = exception
         const ctx = host.switchToHttp()
         const response = ctx.getResponse()
         const { url, method } = ctx.getRequest()
-        const status = exception.getStatus ? getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
+        let status
+        let firebaseStatusCode
+
+        // eslint-disable-next-line id-blacklist
+        const isFirebaseError = (error: FirebaseError): error is FirebaseError => error.code !== undefined
+
+        if (exception instanceof HttpException) status = exception.getStatus()
+        else if (isFirebaseError(exception)) {
+            // @TODO: Map FirebaseErrors to valid HttpStatus codes
+            status = HttpStatus.NOT_FOUND
+            firebaseStatusCode = exception.code
+        } else status = HttpStatus.INTERNAL_SERVER_ERROR
 
         const errorResponse = {
-            code: status,
-            timestamp: new Date(),
+            statusCode: status,
+            firebaseStatusCode,
+            timestamp: new Date().toISOString(),
             path: url,
             method,
-            message: status !== HttpStatus.INTERNAL_SERVER_ERROR ? message.error || message || null : 'Internal server error',
+            message,
         }
 
         if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
             Logger.error(`${method} ${url}`, stack, 'ExceptionFilter')
-        } else {
+        } else if (!firebaseStatusCode) {
             Logger.error(`${method} ${url}`, JSON.stringify(errorResponse), 'ExceptionFilter')
         }
 

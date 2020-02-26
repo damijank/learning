@@ -3,7 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 import { ConfigService } from './config'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
-import { Logger } from '@nestjs/common'
+import { Logger, ValidationPipe } from '@nestjs/common'
 import * as helmet from 'helmet'
 import * as rateLimit from 'express-rate-limit'
 
@@ -54,6 +54,8 @@ const bootstrap = async (): Promise<void> => {
             }),
         )
     }
+
+    app.useGlobalPipes(new ValidationPipe())
 
     const options = new DocumentBuilder()
         .setTitle(title)
