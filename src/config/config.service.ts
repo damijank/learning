@@ -146,7 +146,7 @@ export class ConfigService extends ConfigManager {
             host: this.get<string>('DATABASE_HOST'),
             port: this.get<number>('DATABASE_PORT'),
             database: this.get<string>('DATABASE_NAME'),
-            user: this.get<string>('DATABASE_USER'),
+            username: this.get<string>('DATABASE_USER'),
             password: this.get<string>('DATABASE_PASSWORD'),
             autoLoadEntities: this.get<boolean>('DATABASE_AUTO_LOAD_ENTITIES'),
             synchronize: this.get<boolean>('DATABASE_SYNCHRONIZE'),
@@ -190,5 +190,86 @@ export class ConfigService extends ConfigManager {
     // eslint-disable-next-line @typescript-eslint/require-await
     async createFirestoreConnectOptions() {
         return this.get<string>('FIREBASE_DATABASE_URL')
+    }
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    async createRemoteCredentials(store: string) {
+        return {
+            ...(this.getStoreCredentials(store)),
+            opsUser: this.get<string>('OPS_USERNAME'),
+            opsPass: this.get<string>('OPS_PASSWORD'),
+            bpToken: this.get<string>('BRIGHTPEARL_TOKEN'),
+            bpAccount: this.get<string>('BRIGHTPEARL_ACCOUNT'),
+            bpApp: this.get<string>('BRIGHTPEARL_APP'),
+        }
+    }
+
+    private getStoreCredentials(store: string) {
+        store = store.toUpperCase()
+        return {
+            bcStoreHash: this.get<string>(`${store}_STORE_HASH`),
+            bcStoreName: this.get<string>(`${store}_STORE_NAME`),
+            bcClientId: this.get<string>(`${store}_CLIENT_ID`),
+            bcClientSecret: this.get<string>(`${store}_CLIENT_SECRET`),
+            bcAccessToken: this.get<string>(`${store}_ACCESS_TOKEN`),
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    async createEndpoints(store: string) {
+        store = store.toUpperCase()
+        return {
+            wpRoot: this.get<string>('WP_ROOT'),
+            opsRoot: this.get<string>('OPS_ROOT'),
+            bpRoot: this.get<string>('BRIGHTPEARL_ROOT'),
+            bpProduct: 'product-service/product',
+            bpProductSearch: 'product-service/product-search',
+            bpProductAvailability: 'warehouse-service/product-availability',
+            bpWarehouse: this.get<string>(`${store}_BRIGHTPEARL_WAREHOUSE`),
+            bcRoot: this.get<string>(`${store}_STORE_ROOT`) || 'https://api.bigcommerce.com/stores/',
+            storeInformation: 'v2/store',
+            products: 'v3/catalog/products',
+            categories: 'v3/catalog/categories',
+            currencies: 'v2/currencies',
+            countries: 'v2/countries',
+            gifts: 'v2/gift_certificates',
+            cart: 'v3/carts',
+            cartItems: 'items',
+            checkout: 'v3/checkouts',
+            checkoutOrder: 'orders',
+            checkoutCoupons: 'coupons',
+            checkoutGiftCards: 'gift-certificates',
+            checkoutGiftCardsQuery: `?include=${encodeURIComponent(
+                [
+                    'cart.lineItems.physicalItems.options',
+                    'cart.lineItems.digitalItems.options',
+                    'customer',
+                    'payments',
+                    'promotions.banners',
+                ].join(','),
+            )}`,
+            checkoutBillingAddress: 'billing-address',
+            customer: 'v2/customers',
+            customerV3: 'v3/customers',
+            customerAddresses: 'addresses',
+            customerValidate: 'validate',
+            consignment: 'consignments',
+            consignmentQuery: '?include=consignments.available_shipping_options',
+            coupons: 'v2/coupons',
+            order: 'v2/orders',
+            orderStatus: 'v2/order_statuses',
+            orderTransactionsRoot: 'v3/orders',
+            orderTransactions: 'transactions',
+            orderCoupons: 'coupons',
+            orderShippingAddresses: 'shippingaddresses',
+            orderShipments: 'shipments',
+            orderProducts: 'products',
+            orderTaxes: 'taxes',
+            payments: 'v2/payments',
+            promotions: 'v3/promotions',
+            shipping: 'v2/shipping',
+            time: 'v2/time',
+            stockRoot: '',
+        }
     }
 }

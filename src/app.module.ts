@@ -10,6 +10,16 @@ import { CustomerModule } from './customer/customer.module'
 import { FirebaseAdminModule } from './firebase'
 import * as admin from 'firebase-admin'
 import * as entities from './entities'
+import { CategoryModule } from './category/category.module'
+import { ColorModule } from './color/color.module'
+import {ImageModule} from './image/image.module'
+import {SizeModule} from './size/size.module'
+import {VariantModule} from './variant/variant.module'
+import {ProductModule} from './product/product.module'
+import {ProductSizeModule} from './product-size/product-size.module'
+import {ProductColorModule} from './product-color/product-color.module'
+import {ConsoleModule} from 'nestjs-console'
+import {ProductCliModule} from './cli/product-cli/product-cli.module'
 
 @Module({
     imports: [
@@ -41,6 +51,16 @@ import * as entities from './entities'
             inject: [ConfigService],
         }),
         CustomerModule,
+        CategoryModule,
+        ColorModule,
+        ImageModule,
+        SizeModule,
+        VariantModule,
+        ProductModule,
+        ProductSizeModule,
+        ProductColorModule,
+        ConsoleModule,
+        ProductCliModule,
     ],
     controllers: [AppController],
     providers: [

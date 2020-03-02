@@ -1,11 +1,29 @@
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import { AppModule } from './app.module'
 import { ConfigService } from './config'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { Logger, ValidationPipe } from '@nestjs/common'
+import {CrudConfigService} from '@nestjsx/crud'
 import * as helmet from 'helmet'
 import * as rateLimit from 'express-rate-limit'
+
+// Important: load config before (!!!) you import AppModule
+// https://github.com/nestjsx/crud/wiki/Controllers#global-options
+CrudConfigService.load({
+    auth: {
+        // property: 'auth',
+    },
+    routes: {
+        exclude: ['createManyBase'],
+    },
+    query: {
+        alwaysPaginate: true,
+        limit: 20,
+        maxLimit: 50,
+    },
+})
+
+import { AppModule } from './app.module'
 
 const corsOptions = (origins: string[]): object => ({
     // credentials: true,
@@ -14,7 +32,7 @@ const corsOptions = (origins: string[]): object => ({
         if (!origin) {
             return callback(null, true)
         }
-        if (!origins.includes(origin)) {
+        if (!origins.includes('*') && !origins.includes(origin)) {
             const msg = `The CORS policy for this API doesn't allow access from ${origin}.`
             return callback(new Error(msg), false)
         }
